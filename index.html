@@ -1,0 +1,3721 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Travify</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#8F87F1",
+              secondary: "#C68EFD",
+              accent1: "#E9A5F1",
+              accent2: "#FED2E2",
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- GSAP and ScrollTrigger CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+      /* Define color theme */
+      :root {
+        --primary: #8f87f1;
+        --secondary: #c68efd;
+        --accent-1: #e9a5f1;
+        --accent-2: #fed2e2;
+      }
+
+      /* Base styles */
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: black;
+        color: white;
+        overflow-x: hidden;
+        font-family: "Space Grotesk", sans-serif;
+      }
+
+      /* Page1 container */
+      .page1 {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* Video styling */
+      .video-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Dark overlay */
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.7) 0%,
+          rgba(0, 0, 0, 0.4) 100%
+        );
+      }
+
+      /* Header styles */
+      .header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 2rem;
+        z-index: 10;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-family: "Syncopate", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      /* Hero content */
+      .hero-content {
+        position: absolute;
+        bottom: 25%;
+        left: 0;
+        width: 100%;
+        padding: 0 15%;
+        z-index: 5;
+      }
+
+      .hero-title {
+        font-family: "Syncopate", sans-serif;
+        font-size: clamp(2.5rem, 8vw, 6rem);
+        font-weight: 700;
+        text-transform: uppercase;
+        line-height: 1.1;
+        margin-bottom: 1rem;
+        opacity: 0;
+      }
+
+      .hero-title span {
+        display: block;
+      }
+
+      .highlight {
+        color: var(--accent-2);
+      }
+
+      /* Scroll indicator */
+      .scroll-indicator {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 10;
+        opacity: 0;
+      }
+
+      .scroll-text {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+      }
+
+      .scroll-dot {
+        width: 8px;
+        height: 8px;
+        background-color: var(--accent-2);
+        border-radius: 50%;
+        animation: blink 1.5s infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .hero-content {
+          bottom: 30%;
+          padding: 0 10%;
+        }
+      }
+    </style>
+
+    <!-- Favicon code to add to the <head> section of your HTML document -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzg4MWY2IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgY2xhc3M9ImZlYXRoZXIgZmVhdGhlci1nbG9iZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiMwZjE3MmEiLz48cGF0aCBkPSJNMiAxMmgyME02LjQgMmMzLjUgMy45IDcgMTAgNyAyME0xNy42IDJjLTMuNSAzLjktNyAxMC03IDIwIi8+PC9zdmc+"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzg4MWY2IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgY2xhc3M9ImZlYXRoZXIgZmVhdGhlci1nbG9iZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiMwZjE3MmEiLz48cGF0aCBkPSJNMiAxMmgyME02LjQgMmMzLjUgMy45IDcgMTAgNyAyME0xNy42IDJjLTMuNSAzLjktNyAxMC03IDIwIi8+PC9zdmc+"
+    />
+
+    <!-- Alternative favicons for different devices and browsers -->
+    <link
+      rel="shortcut icon"
+      href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzg4MWY2IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgY2xhc3M9ImZlYXRoZXIgZmVhdGhlci1nbG9iZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiMwZjE3MmEiLz48cGF0aCBkPSJNMiAxMmgyME02LjQgMmMzLjUgMy45IDcgMTAgNyAyME0xNy42IDJjLTMuNSAzLjktNyAxMC03IDIwIi8+PC9zdmc+"
+    />
+    <meta name="msapplication-TileColor" content="#0f172a" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <!-- Favicon script for better compatibility -->
+    <script>
+      // This script generates a favicon dynamically with fallbacks
+      document.addEventListener("DOMContentLoaded", function () {
+        // Create a more dynamic version if the browser supports it
+        try {
+          const faviconCanvas = document.createElement("canvas");
+          faviconCanvas.width = 64;
+          faviconCanvas.height = 64;
+          const ctx = faviconCanvas.getContext("2d");
+
+          // Draw background
+          ctx.fillStyle = "#0f172a";
+          ctx.beginPath();
+          ctx.arc(32, 32, 32, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Draw globe
+          ctx.strokeStyle = "#3881f6";
+          ctx.lineWidth = 4;
+
+          // Globe circle
+          ctx.beginPath();
+          ctx.arc(32, 32, 24, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Horizontal line
+          ctx.beginPath();
+          ctx.moveTo(8, 32);
+          ctx.lineTo(56, 32);
+          ctx.stroke();
+
+          // Curved vertical lines
+          ctx.beginPath();
+          ctx.moveTo(20, 8);
+          ctx.bezierCurveTo(28, 18, 32, 40, 32, 56);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(44, 8);
+          ctx.bezierCurveTo(36, 18, 32, 40, 32, 56);
+          ctx.stroke();
+
+          // Add a small airplane silhouette
+          ctx.fillStyle = "#8b5cf6";
+          ctx.beginPath();
+          ctx.moveTo(44, 22);
+          ctx.lineTo(52, 18);
+          ctx.lineTo(48, 26);
+          ctx.lineTo(44, 22);
+          ctx.fill();
+
+          // Create favicon from canvas
+          const faviconLink = document.createElement("link");
+          faviconLink.rel = "icon";
+          faviconLink.type = "image/png";
+          faviconLink.href = faviconCanvas.toDataURL("image/png");
+          document.head.appendChild(faviconLink);
+        } catch (e) {
+          console.log("Using fallback favicon");
+          // The fallback is already in place with the link tags above
+        }
+      });
+    </script>
+
+    <!-- Dynamic favicon animation for modern browsers -->
+    <script>
+      // This script adds a subtle animation to the favicon when the tab is in focus
+      // Only runs in browsers that support this level of canvas manipulation
+      document.addEventListener("DOMContentLoaded", function () {
+        const supportsAnimation =
+          typeof window.requestAnimationFrame === "function" &&
+          typeof document.createElement("canvas").getContext === "function";
+
+        if (supportsAnimation) {
+          let angle = 0;
+          const size = 64;
+          const canvas = document.createElement("canvas");
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          let animationFrame;
+          let isTabActive = true;
+
+          function drawFavicon() {
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+
+            // Draw background
+            ctx.fillStyle = "#0f172a";
+            ctx.beginPath();
+            ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Save context for rotation
+            ctx.save();
+            ctx.translate(size / 2, size / 2);
+            ctx.rotate(angle);
+            ctx.translate(-size / 2, -size / 2);
+
+            // Draw globe
+            ctx.strokeStyle = "#3881f6";
+            ctx.lineWidth = 4;
+
+            // Globe circle
+            ctx.beginPath();
+            ctx.arc(size / 2, size / 2, size / 2 - 8, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Horizontal line
+            ctx.beginPath();
+            ctx.moveTo(8, size / 2);
+            ctx.lineTo(size - 8, size / 2);
+            ctx.stroke();
+
+            // Curved vertical lines
+            ctx.beginPath();
+            ctx.moveTo(size / 2 - 12, 8);
+            ctx.bezierCurveTo(
+              size / 2 - 4,
+              size / 2 - 14,
+              size / 2,
+              size / 2 + 14,
+              size / 2,
+              size - 8
+            );
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(size / 2 + 12, 8);
+            ctx.bezierCurveTo(
+              size / 2 + 4,
+              size / 2 - 14,
+              size / 2,
+              size / 2 + 14,
+              size / 2,
+              size - 8
+            );
+            ctx.stroke();
+
+            // Restore context
+            ctx.restore();
+
+            // Add a pulsing airplane silhouette (not rotated with the globe)
+            const pulseSize = 1 + 0.1 * Math.sin(Date.now() / 300);
+            ctx.fillStyle = "#8b5cf6";
+            ctx.save();
+            ctx.translate(size / 2 + 8, size / 2 - 10);
+            ctx.scale(pulseSize, pulseSize);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(8, -4);
+            ctx.lineTo(4, 4);
+            ctx.lineTo(0, 0);
+            ctx.fill();
+            ctx.restore();
+
+            // Update favicon
+            const link =
+              document.querySelector('link[rel="icon"]') ||
+              document.createElement("link");
+            link.rel = "icon";
+            link.href = canvas.toDataURL("image/png");
+            if (!document.querySelector('link[rel="icon"]')) {
+              document.head.appendChild(link);
+            }
+
+            // Animate very slowly when tab is active
+            if (isTabActive) {
+              angle += 0.004;
+            } else {
+              angle += 0.001; // Even slower when inactive
+            }
+
+            animationFrame = requestAnimationFrame(drawFavicon);
+          }
+
+          // Start the animation
+          drawFavicon();
+
+          // Pause/slow when tab is not visible to save resources
+          document.addEventListener("visibilitychange", function () {
+            isTabActive = document.visibilityState === "visible";
+          });
+
+          // Cleanup on page unload
+          window.addEventListener("beforeunload", function () {
+            cancelAnimationFrame(animationFrame);
+          });
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div class="page1">
+      <!-- Video Background -->
+      <video class="video-background" autoplay muted loop playsinline>
+        <source src="assets/vid1.mp4.mp4" type="video/mp4" />
+      </video>
+
+      <!-- Darkening Overlay -->
+      <div class="overlay"></div>
+
+      <!-- Header -->
+      <header class="header">
+        <div class="logo">TRAVIFY</div>
+      </header>
+
+      <!-- Hero Content -->
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <span>Travel</span>
+          <span class="highlight">Beyond</span>
+        </h1>
+      </div>
+
+      <!-- Scroll Indicator -->
+      <div class="scroll-indicator">
+        <div class="scroll-text">Scroll</div>
+        <div class="scroll-dot"></div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Ensure video is playing
+        const video = document.querySelector(".video-background");
+        video.play().catch((error) => {
+          console.log("Video autoplay prevented:", error);
+        });
+
+        // GSAP Animations
+        const tl = gsap.timeline();
+
+        // Logo animation
+        tl.from(".logo", {
+          y: -50,
+          opacity: 0,
+          duration: 1.2,
+          ease: "power3.out",
+        });
+
+        // Hero title animation
+        tl.to(
+          ".hero-title",
+          {
+            opacity: 1,
+            duration: 1.2,
+            ease: "power3.out",
+          },
+          "-=0.8"
+        );
+
+        // Scroll indicator animation
+        tl.to(
+          ".scroll-indicator",
+          {
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out",
+          },
+          "-=0.5"
+        );
+
+        // Subtle video zoom
+        tl.fromTo(
+          ".video-background",
+          { scale: 1 },
+          { scale: 1.1, duration: 10, ease: "none" },
+          0
+        );
+      });
+    </script>
+
+    <!-- Page 2: 3D Earth with Interactive Countries -->
+    <div class="page2 relative w-full bg-black text-white py-16">
+      <div class="container mx-auto px-4">
+        <h2
+          class="text-4xl md:text-5xl font-display font-bold text-center mb-8"
+        >
+          Embark on Your <span class="text-gradient">Adventure</span>
+        </h2>
+        <p class="text-lg text-center max-w-2xl mx-auto mb-16">
+          Journey through our interactive globe and uncover extraordinary
+          destinations waiting to be explored
+        </p>
+      </div>
+
+      <!-- 3D Earth Container - FIXED HEIGHT -->
+      <div
+        class="earth-container relative w-full h-[500px] flex justify-center items-center mb-16"
+      >
+        <div id="earth-canvas" class="w-full h-full"></div>
+
+        <!-- Loading Indicator -->
+        <div
+          id="loading"
+          class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 z-10"
+        >
+          <div class="text-center">
+            <div class="spinner mb-4"></div>
+            <p>Loading Earth...</p>
+          </div>
+        </div>
+
+        <!-- Country Info Popup -->
+        <div
+          id="country-info"
+          class="absolute hidden bg-black bg-opacity-80 p-6 rounded-lg shadow-lg max-w-md transition-all duration-300 transform scale-95 opacity-0"
+        >
+          <h3 id="country-name" class="text-2xl font-bold mb-2"></h3>
+          <p id="country-description" class="mb-4"></p>
+          <div class="flex justify-between">
+            <button
+              id="view-packages"
+              class="px-6 py-2 bg-gradient-to-r from-primary to-secondary rounded-full font-medium"
+            >
+              View Packages
+            </button>
+            <button id="close-popup" class="px-4 py-2 bg-gray-800 rounded-full">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Country Highlights -->
+      <div class="container mx-auto px-4 mt-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div
+            class="featured-destination bg-gray-900 rounded-xl overflow-hidden"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1074&q=80"
+              alt="India"
+              class="w-full h-48 object-cover"
+            />
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-2">India</h3>
+              <p class="text-gray-300 mb-4">
+                Experience the vibrant tapestry of cultures, ancient temples,
+                bustling markets, and breathtaking landscapes. From the majestic
+                Taj Mahal to the serene backwaters of Kerala, India offers
+                unforgettable adventures.
+              </p>
+              <button
+                class="country-btn px-4 py-2 bg-primary rounded-full text-sm"
+                data-country="india"
+              >
+                Explore Packages
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="featured-destination bg-gray-900 rounded-xl overflow-hidden"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+              alt="Japan"
+              class="w-full h-48 object-cover"
+            />
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-2">Japan</h3>
+              <p class="text-gray-300 mb-4">
+                Discover the perfect blend of ancient tradition and modern
+                innovation.
+              </p>
+              <button
+                class="country-btn px-4 py-2 bg-primary rounded-full text-sm"
+                data-country="japan"
+              >
+                Explore Packages
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="featured-destination bg-gray-900 rounded-xl overflow-hidden"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?ixlib=rb-4.0.3&auto=format&fit=crop&w=1036&q=80"
+              alt="Italy"
+              class="w-full h-48 object-cover"
+            />
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-2">Italy</h3>
+              <p class="text-gray-300 mb-4">
+                Immerse yourself in art, history, and world-renowned cuisine.
+              </p>
+              <button
+                class="country-btn px-4 py-2 bg-primary rounded-full text-sm"
+                data-country="italy"
+              >
+                Explore Packages
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Extra content to ensure scrolling works -->
+      <div class="container mx-auto px-4 py-20">
+        <h2 class="text-3xl font-bold text-center mb-12">
+          Popular Destinations
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <!-- Additional destinations for scrolling test -->
+          <div class="bg-gray-800 rounded-lg overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?ixlib=rb-4.0.3&auto=format&fit=crop&w=1473&q=80"
+              alt="Paris"
+              class="w-full h-36 object-cover"
+            />
+            <div class="p-4">
+              <h3 class="font-bold">Paris, France</h3>
+            </div>
+          </div>
+
+          <div class="bg-gray-800 rounded-lg overflow-hidden">
+            <img
+              src="https://images.pexels.com/photos/2166553/pexels-photo-2166553.jpeg?auto=compress&cs=tinysrgb&w=600"
+              alt="Bali"
+              class="w-full h-36 object-cover"
+            />
+            <div class="p-4">
+              <h3 class="font-bold">Bali, Indonesia</h3>
+            </div>
+          </div>
+
+          <div class="bg-gray-800 rounded-lg overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+              alt="London"
+              class="w-full h-36 object-cover"
+            />
+            <div class="p-4">
+              <h3 class="font-bold">London, UK</h3>
+            </div>
+          </div>
+
+          <div class="bg-gray-800 rounded-lg overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1528702748617-c64d49f918af?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+              alt="Cancun"
+              class="w-full h-36 object-cover"
+            />
+            <div class="p-4">
+              <h3 class="font-bold">Cancun, Mexico</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add necessary styles -->
+    <style>
+      .text-gradient {
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        border-top: 4px solid var(--primary);
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .featured-destination {
+        transition: all 0.3s ease;
+      }
+
+      .featured-destination:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 25px rgba(143, 135, 241, 0.2);
+      }
+
+      .country-btn {
+        transition: all 0.3s ease;
+      }
+
+      .country-btn:hover {
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+      }
+
+      /* Fix for scrolling - ensure container doesn't block scrolling */
+      #earth-canvas {
+        pointer-events: auto;
+        touch-action: none; /* Prevent touch events from scrolling */
+      }
+
+      #earth-canvas:focus {
+        outline: none;
+      }
+
+      /* Ensure the canvas container doesn't interfere with scrolling */
+      .earth-container canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    </style>
+
+    <!-- Add Three.js library and Globe.gl -->
+    <script src="https://unpkg.com/three@0.132.2/build/three.min.js"></script>
+    <script src="https://unpkg.com/globe.gl@2.26.11/dist/globe.gl.min.js"></script>
+
+    <!-- 3D Earth Implementation -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Country data with descriptions and locations
+        const countries = {
+          india: {
+            name: "India",
+            description:
+              "Experience the vibrant tapestry of cultures, ancient temples, bustling markets, and breathtaking landscapes. From the majestic Taj Mahal to the serene backwaters of Kerala, India offers unforgettable adventures.",
+            latitude: 20.5937,
+            longitude: 78.9629,
+            packages: "/packages/india",
+            image:
+              "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1074&q=80",
+          },
+          japan: {
+            name: "Japan",
+            description:
+              "Discover a fascinating blend of ultramodern and traditional, from neon-lit skyscrapers to historic temples. Experience cherry blossom seasons, serene gardens, and world-class cuisine.",
+            latitude: 36.2048,
+            longitude: 138.2529,
+            packages: "/packages/japan",
+            image:
+              "https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
+          },
+          italy: {
+            name: "Italy",
+            description:
+              "Explore the birthplace of Renaissance art, Roman ruins, and world-famous cuisine. From Venice's canals to Tuscany's rolling hills, Italy offers endless inspiration for travelers.",
+            latitude: 41.8719,
+            longitude: 12.5674,
+            packages: "/packages/italy",
+            image:
+              "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?ixlib=rb-4.0.3&auto=format&fit=crop&w=1036&q=80",
+          },
+          france: {
+            name: "France",
+            description:
+              "From the romantic streets of Paris to the picturesque lavender fields of Provence, France captivates with its art, architecture, and gastronomy.",
+            latitude: 46.2276,
+            longitude: 2.2137,
+            packages: "/packages/france",
+            image:
+              "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?ixlib=rb-4.0.3&auto=format&fit=crop&w=1473&q=80",
+          },
+          australia: {
+            name: "Australia",
+            description:
+              "Discover breathtaking coastlines, unique wildlife, and vibrant cities. From the Great Barrier Reef to the Outback, Australia offers diverse experiences for every traveler.",
+            latitude: -25.2744,
+            longitude: 133.7751,
+            packages: "/packages/australia",
+            image:
+              "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
+          },
+          brazil: {
+            name: "Brazil",
+            description:
+              "Experience the vibrant culture, lush rainforests, and stunning beaches. From Rio de Janeiro's energy to the biodiversity of the Amazon, Brazil promises unforgettable adventures.",
+            latitude: -14.235,
+            longitude: -51.9253,
+            packages: "/packages/brazil",
+            image:
+              "https://images.unsplash.com/photo-1516306580123-e6e52b1b7b5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1026&q=80",
+          },
+        };
+
+        // Initialize globe once DOM is loaded
+        initGlobe();
+
+        function initGlobe() {
+          const globeElement = document.getElementById("earth-canvas");
+          if (!globeElement) {
+            console.error("Globe canvas element not found");
+            return;
+          }
+
+          try {
+            // Create globe instance with direct earth image references
+            const globe = Globe()
+              .globeImageUrl(
+                "https://cdn.jsdelivr.net/npm/three-globe@2.24.10/example/img/earth-blue-marble.jpg"
+              )
+              .bumpImageUrl(
+                "https://cdn.jsdelivr.net/npm/three-globe@2.24.10/example/img/earth-topology.png"
+              )
+              .backgroundImageUrl(
+                "https://cdn.jsdelivr.net/npm/three-globe@2.24.10/example/img/night-sky.png"
+              )
+              .pointOfView({ lat: 20, lng: 78, altitude: 2.5 })
+              .polygonCapColor(() => "rgba(200, 0, 0, 0.3)")
+              .polygonSideColor(() => "rgba(150, 0, 0, 0.5)")
+              .polygonStrokeColor(() => "#111")
+              .onPolygonClick(showCountryInfo)
+              .pointsData([])
+              .pointColor(() => "var(--accent-2)")
+              .pointAltitude(0.01)
+              .pointRadius(0.12)(globeElement);
+
+            // Fix canvas size issues
+            globe.width(globeElement.clientWidth);
+            globe.height(globeElement.clientHeight);
+
+            console.log("Globe initialized successfully");
+
+            // Add event listener for globe loaded
+            globe.onGlobeReady(() => {
+              document.getElementById("loading").style.display = "none";
+              console.log("Globe is ready");
+
+              // Fetch country polygon data
+              fetch("https://unpkg.com/world-atlas@2.0.2/countries-110m.json")
+                .then((res) => res.json())
+                .then(({ features }) => {
+                  globe.polygonsData(features);
+
+                  // Add points for highlighted countries
+                  const points = Object.values(countries).map((country) => ({
+                    name: country.name,
+                    lat: country.latitude,
+                    lng: country.longitude,
+                    country: country,
+                  }));
+
+                  globe.pointsData(points);
+
+                  // Automatic rotation animation
+                  globe.controls().autoRotate = true;
+                  globe.controls().autoRotateSpeed = 0.5;
+
+                  globe.controls().addEventListener("start", () => {
+                    globe.controls().autoRotate = false;
+                  });
+
+                  // Add highlighted countries with pulsing effect
+                  addPulsingHighlights(globe, Object.values(countries));
+                })
+                .catch((err) => {
+                  console.error("Failed to load country data:", err);
+                });
+
+              // Add click handlers for country buttons
+              document.querySelectorAll(".country-btn").forEach((btn) => {
+                btn.addEventListener("click", () => {
+                  const countryId = btn.getAttribute("data-country");
+                  if (countries[countryId]) {
+                    const country = countries[countryId];
+
+                    // Animate globe to country
+                    globe.pointOfView(
+                      {
+                        lat: country.latitude,
+                        lng: country.longitude,
+                        altitude: 1.5,
+                      },
+                      1000
+                    );
+
+                    // Show country info after slight delay
+                    setTimeout(() => {
+                      showCountryInfo({
+                        name: country.name,
+                        country: country,
+                      });
+                    }, 1200);
+                  }
+                });
+              });
+            });
+
+            // Prevent globe controls from capturing scroll events
+            globe.controls().addEventListener("change", () => {
+              setTimeout(() => {
+                // Re-enable scrolling after a short delay when user stops interacting
+                globe.controls().enableZoom = false;
+                setTimeout(() => {
+                  globe.controls().enableZoom = true;
+                }, 100);
+              }, 500);
+            });
+
+            // Add window resize handler
+            window.addEventListener("resize", () => {
+              globe.width(globeElement.clientWidth);
+              globe.height(globeElement.clientHeight);
+            });
+
+            // Country info popup functionality
+            const countryInfo = document.getElementById("country-info");
+            const countryName = document.getElementById("country-name");
+            const countryDescription = document.getElementById(
+              "country-description"
+            );
+            const viewPackagesBtn = document.getElementById("view-packages");
+            const closePopupBtn = document.getElementById("close-popup");
+
+            function showCountryInfo(point) {
+              // Skip if no country data
+              if (!point || !point.country) return;
+
+              const country = point.country;
+
+              // Update popup content
+              countryName.textContent = country.name;
+              countryDescription.textContent = country.description;
+
+              // Set packages link
+              viewPackagesBtn.onclick = () => {
+                window.location.href = country.packages;
+              };
+
+              // Show popup with animation
+              countryInfo.classList.remove("hidden");
+              gsap.to(countryInfo, {
+                opacity: 1,
+                scale: 1,
+                duration: 0.3,
+                ease: "back.out(1.7)",
+              });
+
+              // Position near country on screen
+              const screenPos = getScreenPosition(
+                globe,
+                country.latitude,
+                country.longitude
+              );
+              if (screenPos) {
+                positionPopup(screenPos.x, screenPos.y);
+              }
+            }
+
+            function positionPopup(x, y) {
+              // Get container dimensions
+              const container = document.querySelector(".earth-container");
+              const containerRect = container.getBoundingClientRect();
+
+              // Calculate popup position
+              let posX = x - containerRect.left;
+              let posY = y - containerRect.top;
+
+              // Get popup dimensions
+              const popupWidth = countryInfo.offsetWidth;
+              const popupHeight = countryInfo.offsetHeight;
+
+              // Adjust to keep on screen
+              posX = Math.max(
+                20,
+                Math.min(
+                  containerRect.width - popupWidth - 20,
+                  posX - popupWidth / 2
+                )
+              );
+              posY = Math.max(
+                20,
+                Math.min(
+                  containerRect.height - popupHeight - 20,
+                  posY - popupHeight - 20
+                )
+              );
+
+              // Set position
+              countryInfo.style.left = `${posX}px`;
+              countryInfo.style.top = `${posY}px`;
+            }
+
+            // Close popup button
+            closePopupBtn.addEventListener("click", () => {
+              gsap.to(countryInfo, {
+                opacity: 0,
+                scale: 0.95,
+                duration: 0.2,
+                onComplete: () => {
+                  countryInfo.classList.add("hidden");
+                },
+              });
+            });
+
+            // Helper to get screen position from lat/lng
+            function getScreenPosition(globe, lat, lng) {
+              const globeDOM = globe.renderer().domElement;
+              const globeRect = globeDOM.getBoundingClientRect();
+              const pos = globe.getScreenCoords(lat, lng);
+
+              if (!pos) return null;
+
+              return {
+                x: pos.x + globeRect.left,
+                y: pos.y + globeRect.top,
+              };
+            }
+
+            // Add pulsing highlights for featured countries
+            function addPulsingHighlights(globe, countries) {
+              // Create data for highlight points
+              const highlightData = countries.map((country) => ({
+                lat: country.latitude,
+                lng: country.longitude,
+                size: 1,
+                color: "var(--primary)",
+              }));
+
+              // Define ring layer
+              const ringLayer = globe
+                .customLayerData(highlightData)
+                .customThreeObject((d) => {
+                  const material = new THREE.MeshBasicMaterial({
+                    color: d.color,
+                    transparent: true,
+                    opacity: 0.8,
+                  });
+
+                  const geometry = new THREE.RingGeometry(0.1, 0.15, 32);
+                  const mesh = new THREE.Mesh(geometry, material);
+
+                  // Animation setup
+                  const initialScale = d.size || 1;
+                  gsap.to(mesh.scale, {
+                    x: initialScale * 2,
+                    y: initialScale * 2,
+                    z: initialScale * 2,
+                    duration: 1.5,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut",
+                  });
+
+                  gsap.to(material, {
+                    opacity: 0.2,
+                    duration: 1.5,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut",
+                  });
+
+                  return mesh;
+                })
+                .customThreeObjectUpdate((obj, d) => {
+                  Object.assign(
+                    obj.position,
+                    globe.getCoords(d.lat, d.lng, 0.01)
+                  );
+                  obj.lookAt(0, 0, 0);
+                });
+            }
+          } catch (error) {
+            console.error("Error initializing globe:", error);
+            document.getElementById("loading").innerHTML =
+              "Error loading globe. Please refresh the page.";
+          }
+        }
+      });
+    </script>
+
+    <!-- Lenis Smooth Scrolling -->
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.19/dist/lenis.min.js"></script>
+
+    <script>
+      // Initialize Lenis smooth scrolling
+      document.addEventListener("DOMContentLoaded", () => {
+        // Create Lenis instance with performance-focused settings
+        const lenis = new Lenis({
+          duration: 0.8, // Reduced duration for better responsiveness
+          easing: (t) => 1 - Math.pow(1 - t, 3), // Cubic ease-out for better performance
+          direction: "vertical",
+          gestureDirection: "vertical",
+          smooth: true,
+          mouseMultiplier: 1,
+          smoothTouch: false, // Disable smooth touch for better native performance
+          touchMultiplier: 1.5, // Reduced for better control
+          infinite: false,
+        });
+
+        // More efficient RAF implementation
+        function raf(time) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // Optional GSAP integration with performance improvements
+        if (window.gsap && window.ScrollTrigger) {
+          gsap.ticker.lagSmoothing(0); // Disable lag smoothing for better performance
+          lenis.on("scroll", ScrollTrigger.update);
+        }
+
+        // Optimize globe interaction
+        const earthContainer = document.querySelector(".earth-container");
+        const earthCanvas = document.getElementById("earth-canvas");
+
+        if (earthContainer && earthCanvas) {
+          // Completely exclude the container from Lenis
+          earthContainer.setAttribute("data-lenis-prevent", "");
+
+          // Globe-specific optimization
+          if (window.Globe) {
+            // If the globe instance is accessible, optimize its controls
+            const globeInstance = earthCanvas.__globeInstance;
+            if (globeInstance && globeInstance.controls) {
+              // Optimize controls for touch
+              const controls = globeInstance.controls();
+              if (controls) {
+                controls.enableDamping = false; // Disable damping for immediate response
+                controls.rotateSpeed = 1.5; // Increase rotation speed
+                controls.touchRotateSpeed = 2.0; // Faster touch rotation
+                controls.zoomSpeed = 1.2; // Faster zoom
+                controls.touches = {
+                  ONE: THREE.TOUCH.ROTATE,
+                  TWO: THREE.TOUCH.DOLLY_PAN,
+                };
+              }
+            }
+          }
+        }
+
+        // Remove delay when stopping/starting Lenis
+        const optimizedStop = () => {
+          lenis.stop();
+        };
+
+        const optimizedStart = () => {
+          lenis.start();
+        };
+
+        // Quick touch handlers (with immediate action, no setTimeout)
+        if (earthContainer) {
+          earthContainer.addEventListener("touchstart", optimizedStop, {
+            passive: true,
+          });
+          earthContainer.addEventListener("touchend", optimizedStart, {
+            passive: true,
+          });
+          earthContainer.addEventListener("touchcancel", optimizedStart, {
+            passive: true,
+          });
+        }
+
+        // Create a MutationObserver to watch for Globe initialization
+        if (earthCanvas && !earthCanvas.__globeInstance) {
+          const observer = new MutationObserver((mutations) => {
+            // Check if the globe is now initialized
+            if (earthCanvas.__globeInstance) {
+              const controls = earthCanvas.__globeInstance.controls();
+              if (controls) {
+                // Optimize controls for performance
+                controls.enableDamping = false;
+                controls.rotateSpeed = 1.5;
+                controls.touchRotateSpeed = 2.0;
+                controls.zoomSpeed = 1.2;
+              }
+              observer.disconnect(); // Clean up the observer
+            }
+          });
+
+          // Start observing
+          observer.observe(earthCanvas, {
+            attributes: true,
+            childList: true,
+            subtree: true,
+          });
+        }
+      });
+    </script>
+
+    <style>
+      /* Lenis required styles */
+      html.lenis {
+        height: auto;
+      }
+
+      .lenis.lenis-smooth {
+        scroll-behavior: auto;
+      }
+
+      .lenis.lenis-smooth [data-lenis-prevent] {
+        overscroll-behavior: contain;
+      }
+
+      .lenis.lenis-stopped {
+        overflow: hidden;
+      }
+
+      .lenis.lenis-scrolling iframe {
+        pointer-events: none;
+      }
+
+      /* Optimized touch styles for globe */
+      .earth-container {
+        touch-action: manipulation !important;
+        will-change: transform;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .earth-container canvas {
+        touch-action: manipulation !important;
+        will-change: transform;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+      }
+
+      /* Force hardware acceleration */
+      .earth-container,
+      .earth-container canvas {
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+      }
+
+      /* Remove any existing transitions that might slow things down */
+      .earth-container,
+      .earth-container * {
+        transition: none !important;
+        animation-duration: 0ms !important;
+      }
+    </style>
+
+    <!-- Page 3 with Travel Carousel - Dark Theme -->
+    <div class="page3">
+      <div class="carousel-container">
+        <h2 class="carousel-title">Unforgettable Travel Moments</h2>
+        <p class="carousel-subtitle">Discover happiness through exploration</p>
+
+        <div class="carousel">
+          <div class="carousel-inner">
+            <!-- Carousel Items -->
+            <div class="carousel-item active">
+              <img
+                src="https://images.unsplash.com/photo-1517760444937-f6397edcbbcd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                alt="Happy travelers taking selfie at beach"
+              />
+              <div class="carousel-caption">
+                <h3>Beach Paradise</h3>
+                <p>Creating memories that last a lifetime</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img
+                src="https://images.unsplash.com/photo-1539635278303-d4002c07eae3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                alt="Friends hiking in mountains"
+              />
+              <div class="carousel-caption">
+                <h3>Mountain Adventures</h3>
+                <p>Sharing joy at the summit</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img
+                src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                alt="Person exploring Venice, Italy"
+              />
+              <div class="carousel-caption">
+                <h3>European Charm</h3>
+                <p>Wander through historic wonders</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img
+                src="https://images.unsplash.com/photo-1541410965313-d53b3c16ef17?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                alt="Couple enjoying sunrise in safari"
+              />
+              <div class="carousel-caption">
+                <h3>Safari Wonders</h3>
+                <p>Witness nature's spectacular display</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img
+                src="https://images.unsplash.com/photo-1565538810643-b5bdb714032a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                alt="Family at tropical resort"
+              />
+              <div class="carousel-caption">
+                <h3>Tropical Getaways</h3>
+                <p>Family moments to cherish</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img
+                src="https://images.unsplash.com/photo-1484712401471-05c7215830eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                alt="Friends celebrating on cruise ship"
+              />
+              <div class="carousel-caption">
+                <h3>Cruise Adventures</h3>
+                <p>Sailing into unforgettable experiences</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carousel Controls -->
+          <button class="carousel-control prev" aria-label="Previous slide">
+            ❮
+          </button>
+          <button class="carousel-control next" aria-label="Next slide">
+            ❯
+          </button>
+
+          <!-- Carousel Indicators -->
+          <div class="carousel-indicators"></div>
+        </div>
+
+        <div class="testimonials">
+          <h3>What Our Travelers Say</h3>
+          <div class="testimonial-container">
+            <div class="testimonial">
+              <div class="quote">
+                "The most amazing experience of my life. I'll never forget the
+                breathtaking views and the wonderful people I met along the
+                way."
+              </div>
+              <div class="author">— Sarah J., Thailand Adventure</div>
+            </div>
+            <div class="testimonial">
+              <div class="quote">
+                "From the moment we booked until we returned home, everything
+                was perfect. Can't wait for our next journey!"
+              </div>
+              <div class="author">— Michael & Lisa, European Tour</div>
+            </div>
+            <div class="testimonial">
+              <div class="quote">
+                "I never thought traveling could change my perspective so much.
+                These memories will stay with me forever."
+              </div>
+              <div class="author">— David R., African Safari</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      /* Page 3 Dark Theme Styles */
+      .page3 {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+        padding: 80px 20px;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #f3f4f6;
+      }
+
+      .carousel-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .carousel-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #f3f4f6;
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 1s forwards;
+        animation-delay: 0.2s;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .carousel-subtitle {
+        font-size: 1.5rem;
+        color: #d1d5db;
+        margin-bottom: 3rem;
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 1s forwards;
+        animation-delay: 0.4s;
+      }
+
+      @keyframes fadeInUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Carousel Dark Theme Styles */
+      .carousel {
+        position: relative;
+        width: 100%;
+        height: 500px;
+        margin-bottom: 4rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .carousel-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s ease-in-out;
+      }
+
+      .carousel-item {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.6s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .carousel-item.active {
+        opacity: 1;
+        z-index: 1;
+      }
+
+      .carousel-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+        filter: brightness(0.9);
+      }
+
+      .carousel-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.8) 0%,
+          rgba(0, 0, 0, 0) 100%
+        );
+        color: white;
+        padding: 40px 20px 20px;
+        text-align: left;
+        border-radius: 0 0 12px 12px;
+      }
+
+      .carousel-caption h3 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      .carousel-caption p {
+        font-size: 1.1rem;
+        margin: 0;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+      }
+
+      .carousel-control {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 50px;
+        height: 50px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        z-index: 5;
+        font-size: 1.5rem;
+        color: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .carousel-control:hover {
+        background: rgba(0, 0, 0, 0.8);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+      }
+
+      .carousel-control.prev {
+        left: 20px;
+      }
+
+      .carousel-control.next {
+        right: 20px;
+      }
+
+      .carousel-indicators {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        z-index: 5;
+      }
+
+      .indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .indicator.active {
+        background: #f3f4f6;
+        transform: scale(1.2);
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+      }
+
+      /* Testimonials - Dark Theme */
+      .testimonials {
+        margin-top: 2rem;
+        width: 100%;
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 1s forwards;
+        animation-delay: 0.6s;
+      }
+
+      .testimonials h3 {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        color: #f3f4f6;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .testimonial-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+      }
+
+      .testimonial {
+        background: rgba(31, 41, 55, 0.8);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        width: calc(33.333% - 20px);
+        min-width: 280px;
+        text-align: left;
+        position: relative;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+      }
+
+      .testimonial .quote {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #d1d5db;
+        font-style: italic;
+        margin-bottom: 20px;
+      }
+
+      .testimonial .quote::before {
+        content: '"';
+        font-size: 4rem;
+        color: rgba(147, 197, 253, 0.2); /* Subtle blue accent */
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-family: serif;
+      }
+
+      .testimonial .author {
+        font-weight: 600;
+        color: #f3f4f6;
+        display: flex;
+        align-items: center;
+      }
+
+      .testimonial .author::before {
+        content: "";
+        display: inline-block;
+        width: 30px;
+        height: 2px;
+        background: rgb(147, 197, 253, 0.5); /* Subtle blue accent */
+        margin-right: 10px;
+      }
+
+      /* Dark theme enhancement - subtle glow effects */
+      .carousel::after {
+        content: "";
+        position: absolute;
+        top: -50px;
+        left: -50px;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(
+          circle,
+          rgba(147, 197, 253, 0.1) 0%,
+          rgba(147, 197, 253, 0) 70%
+        );
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      .testimonial:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        transition: all 0.3s ease;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .carousel {
+          height: 350px;
+        }
+
+        .carousel-title {
+          font-size: 2.2rem;
+        }
+
+        .carousel-subtitle {
+          font-size: 1.2rem;
+        }
+
+        .testimonial {
+          width: 100%;
+        }
+      }
+    </style>
+
+    <script>
+      // Carousel Functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        const carousel = document.querySelector(".carousel");
+        const carouselInner = carousel.querySelector(".carousel-inner");
+        const carouselItems = carousel.querySelectorAll(".carousel-item");
+        const prevButton = carousel.querySelector(".prev");
+        const nextButton = carousel.querySelector(".next");
+        const indicators = carousel.querySelector(".carousel-indicators");
+
+        let currentIndex = 0;
+        let interval;
+        const autoplayDelay = 5000; // 5 seconds
+
+        // Create indicators
+        carouselItems.forEach((_, index) => {
+          const indicator = document.createElement("div");
+          indicator.classList.add("indicator");
+          if (index === 0) indicator.classList.add("active");
+          indicator.addEventListener("click", () => {
+            goToSlide(index);
+            resetAutoplay();
+          });
+          indicators.appendChild(indicator);
+        });
+
+        // Update active indicator
+        function updateIndicators() {
+          const allIndicators = indicators.querySelectorAll(".indicator");
+          allIndicators.forEach((indicator, index) => {
+            if (index === currentIndex) {
+              indicator.classList.add("active");
+            } else {
+              indicator.classList.remove("active");
+            }
+          });
+        }
+
+        // Go to specific slide
+        function goToSlide(index) {
+          // Remove active class from all items
+          carouselItems.forEach((item) => {
+            item.classList.remove("active");
+          });
+
+          // Add active class to current item
+          carouselItems[index].classList.add("active");
+
+          currentIndex = index;
+          updateIndicators();
+        }
+
+        // Go to next slide
+        function nextSlide() {
+          let nextIndex = currentIndex + 1;
+          if (nextIndex >= carouselItems.length) {
+            nextIndex = 0;
+          }
+          goToSlide(nextIndex);
+        }
+
+        // Go to previous slide
+        function prevSlide() {
+          let prevIndex = currentIndex - 1;
+          if (prevIndex < 0) {
+            prevIndex = carouselItems.length - 1;
+          }
+          goToSlide(prevIndex);
+        }
+
+        // Reset autoplay
+        function resetAutoplay() {
+          clearInterval(interval);
+          startAutoplay();
+        }
+
+        // Start autoplay
+        function startAutoplay() {
+          interval = setInterval(nextSlide, autoplayDelay);
+        }
+
+        // Event listeners
+        prevButton.addEventListener("click", () => {
+          prevSlide();
+          resetAutoplay();
+        });
+
+        nextButton.addEventListener("click", () => {
+          nextSlide();
+          resetAutoplay();
+        });
+
+        // Touch/swipe functionality
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        carousel.addEventListener(
+          "touchstart",
+          (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+          },
+          { passive: true }
+        );
+
+        carousel.addEventListener(
+          "touchend",
+          (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+          },
+          { passive: true }
+        );
+
+        function handleSwipe() {
+          if (touchEndX < touchStartX - 50) {
+            // Swipe left, go next
+            nextSlide();
+            resetAutoplay();
+          }
+          if (touchEndX > touchStartX + 50) {
+            // Swipe right, go prev
+            prevSlide();
+            resetAutoplay();
+          }
+        }
+
+        // Dark theme special effects
+        carouselItems.forEach((item) => {
+          const img = item.querySelector("img");
+
+          // Add hover effect
+          item.addEventListener("mouseenter", () => {
+            if (item.classList.contains("active")) {
+              gsap.to(img, {
+                scale: 1.05,
+                filter: "brightness(1.1)",
+                duration: 0.5,
+              });
+            }
+          });
+
+          item.addEventListener("mouseleave", () => {
+            if (item.classList.contains("active")) {
+              gsap.to(img, {
+                scale: 1,
+                filter: "brightness(0.9)",
+                duration: 0.5,
+              });
+            }
+          });
+        });
+
+        // GSAP Animation for page3 elements if GSAP is available
+        if (window.gsap && window.ScrollTrigger) {
+          gsap.registerPlugin(ScrollTrigger);
+
+          gsap.from(".carousel", {
+            opacity: 0,
+            y: 50,
+            duration: 1,
+            scrollTrigger: {
+              trigger: ".page3",
+              start: "top 80%",
+              toggleActions: "play none none none",
+            },
+          });
+
+          gsap.from(".testimonial", {
+            opacity: 0,
+            y: 30,
+            duration: 0.8,
+            stagger: 0.2,
+            scrollTrigger: {
+              trigger: ".testimonials",
+              start: "top 80%",
+              toggleActions: "play none none none",
+            },
+          });
+
+          // Add parallax effect to carousel images
+          carouselItems.forEach((item) => {
+            const img = item.querySelector("img");
+            gsap.to(img, {
+              yPercent: -10,
+              ease: "none",
+              scrollTrigger: {
+                trigger: ".carousel",
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              },
+            });
+          });
+        }
+
+        // Start autoplay
+        startAutoplay();
+
+        // Pause autoplay on hover
+        carousel.addEventListener("mouseenter", () => {
+          clearInterval(interval);
+        });
+
+        carousel.addEventListener("mouseleave", () => {
+          startAutoplay();
+        });
+
+        // Ensure integration with Lenis smooth scrolling if it exists
+        if (window.lenis) {
+          // Add observer for when carousel enters viewport
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  // Maybe slow down Lenis for better viewing experience
+                  window.lenis.options.duration = 1.5;
+                } else {
+                  // Reset Lenis speed when carousel is out of view
+                  window.lenis.options.duration = 0.8;
+                }
+              });
+            },
+            { threshold: 0.3 }
+          );
+
+          observer.observe(carousel);
+        }
+
+        // Add particle effects for dark theme ambiance
+        const page3 = document.querySelector(".page3");
+        const particleCount = 20;
+
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement("div");
+          particle.classList.add("particle");
+
+          // Set random position and animation
+          particle.style.left = `${Math.random() * 100}%`;
+          particle.style.top = `${Math.random() * 100}%`;
+          particle.style.animationDelay = `${Math.random() * 5}s`;
+          particle.style.animationDuration = `${5 + Math.random() * 10}s`;
+          particle.style.opacity = `${0.1 + Math.random() * 0.3}`;
+          page3.appendChild(particle);
+        }
+      });
+    </script>
+
+    <style>
+      /* Additional styles for dark theme particles */
+      .particle {
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        background: rgba(147, 197, 253, 0.3);
+        border-radius: 50%;
+        pointer-events: none;
+        animation: float 10s linear infinite;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0) translateX(0);
+          opacity: 0;
+        }
+        25% {
+          opacity: 0.3;
+        }
+        75% {
+          opacity: 0.3;
+        }
+        100% {
+          transform: translateY(-100px) translateX(50px);
+          opacity: 0;
+        }
+      }
+
+      /* Dark theme page styling */
+      .page3::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: radial-gradient(
+            circle at 15% 50%,
+            rgba(59, 130, 246, 0.03) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 85% 30%,
+            rgba(139, 92, 246, 0.03) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+      }
+    </style>
+
+    <!-- Page 4 - AI Travel Assistant Chatbot (Dark Theme) -->
+    <div class="page4">
+      <div class="chatbot-container">
+        <div class="chatbot-card">
+          <div class="chatbot-header">
+            <div class="chatbot-avatar">
+              <div class="avatar-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zm0 10a2 2 0 110 4 2 2 0 010-4zm0-8a4 4 0 110 8 4 4 0 010-8z"
+                    opacity=".5"
+                  />
+                  <path d="M12 8a4 4 0 014 4h-8a4 4 0 014-4z" />
+                </svg>
+              </div>
+            </div>
+            <div class="chatbot-title">
+              <h3>Travel Assistant</h3>
+              <span class="chatbot-status online">AI Powered</span>
+            </div>
+            <button class="chatbot-toggle-btn">
+              <span class="minimize">−</span>
+              <span class="maximize">+</span>
+            </button>
+          </div>
+
+          <div class="chatbot-messages" id="chatbot-messages">
+            <div class="message bot-message">
+              <div class="message-content">
+                <p>
+                  Hello! I'm your AI travel assistant. How can I help you plan
+                  your next adventure?
+                </p>
+              </div>
+              <div class="message-time">Just now</div>
+            </div>
+          </div>
+
+          <div class="chatbot-suggestions">
+            <button
+              class="suggestion-chip"
+              data-suggestion="Popular destinations"
+            >
+              Popular destinations
+            </button>
+            <button
+              class="suggestion-chip"
+              data-suggestion="Budget travel tips"
+            >
+              Budget travel tips
+            </button>
+            <button
+              class="suggestion-chip"
+              data-suggestion="Best time to visit"
+            >
+              Best time to visit
+            </button>
+            <button class="suggestion-chip" data-suggestion="Travel packages">
+              Travel packages
+            </button>
+          </div>
+
+          <div class="chatbot-input">
+            <input
+              type="text"
+              id="user-input"
+              placeholder="Ask me anything about travel..."
+              autocomplete="off"
+            />
+            <button id="send-button">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M3.4 20.4l17.45-7.48a1 1 0 000-1.84L3.4 3.6a.993.993 0 00-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="chatbot-features">
+          <h2>AI Travel Assistant</h2>
+          <p>Your personal guide to exploring the world</p>
+
+          <div class="features-grid">
+            <div class="feature">
+              <div class="feature-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
+                  />
+                </svg>
+              </div>
+              <h3>Destination Knowledge</h3>
+              <p>Get insights on hundreds of global destinations</p>
+            </div>
+
+            <div class="feature">
+              <div class="feature-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"
+                  />
+                </svg>
+              </div>
+              <h3>Budget Planning</h3>
+              <p>Get cost estimates and budget saving tips</p>
+            </div>
+
+            <div class="feature">
+              <div class="feature-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"
+                  />
+                </svg>
+              </div>
+              <h3>Travel Timing</h3>
+              <p>Learn about seasons, weather, and best times to visit</p>
+            </div>
+
+            <div class="feature">
+              <div class="feature-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"
+                  />
+                </svg>
+              </div>
+              <h3>Local Tips</h3>
+              <p>Insider advice on customs, transportation, and attractions</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      /* Page 4 - Chatbot Dark Theme Styles */
+      .page4 {
+        min-height: 100vh;
+        background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+        padding: 60px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f8fafc;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Background ambient effects */
+      .page4::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: radial-gradient(
+            circle at 10% 10%,
+            rgba(56, 189, 248, 0.05) 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 90% 90%,
+            rgba(139, 92, 246, 0.05) 0%,
+            transparent 40%
+          );
+        pointer-events: none;
+      }
+
+      .chatbot-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: center;
+      }
+
+      /* Chatbot card */
+      .chatbot-card {
+        background: rgba(15, 23, 42, 0.7);
+        max-width: 500px;
+        width: 100%;
+        height: 600px;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+      }
+
+      .chatbot-header {
+        display: flex;
+        align-items: center;
+        padding: 16px;
+        background: rgba(17, 24, 39, 0.8);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .chatbot-avatar {
+        width: 40px;
+        height: 40px;
+        margin-right: 12px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .avatar-icon {
+        width: 24px;
+        height: 24px;
+        color: white;
+      }
+
+      .chatbot-title {
+        flex: 1;
+      }
+
+      .chatbot-title h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #f8fafc;
+      }
+
+      .chatbot-status {
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+
+      .chatbot-status.online::before {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: #10b981;
+        border-radius: 50%;
+        margin-right: 6px;
+      }
+
+      .chatbot-toggle-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255, 255, 255, 0.1);
+        color: #f8fafc;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s;
+      }
+
+      .chatbot-toggle-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .chatbot-toggle-btn .maximize {
+        display: none;
+      }
+
+      .chatbot-card.minimized .minimize {
+        display: none;
+      }
+
+      .chatbot-card.minimized .maximize {
+        display: block;
+      }
+
+      /* Message area */
+      .chatbot-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+      }
+
+      .chatbot-messages::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .chatbot-messages::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .chatbot-messages::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+      }
+
+      .message {
+        display: flex;
+        flex-direction: column;
+        max-width: 85%;
+      }
+
+      .user-message {
+        align-self: flex-end;
+      }
+
+      .bot-message {
+        align-self: flex-start;
+      }
+
+      .message-content {
+        padding: 12px 16px;
+        border-radius: 18px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        position: relative;
+      }
+
+      .bot-message .message-content {
+        background: rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-bottom-left-radius: 4px;
+      }
+
+      .user-message .message-content {
+        background: rgba(139, 92, 246, 0.2);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-bottom-right-radius: 4px;
+        text-align: right;
+      }
+
+      .message-time {
+        font-size: 0.7rem;
+        color: #94a3b8;
+        margin-top: 4px;
+        margin-left: 8px;
+        margin-right: 8px;
+      }
+
+      /* Suggestions */
+      .chatbot-suggestions {
+        padding: 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .suggestion-chip {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 6px 16px;
+        font-size: 0.85rem;
+        color: #f8fafc;
+        cursor: pointer;
+        transition: all 0.3s;
+        white-space: nowrap;
+      }
+
+      .suggestion-chip:hover {
+        background: rgba(59, 130, 246, 0.2);
+        border-color: rgba(59, 130, 246, 0.4);
+        transform: translateY(-2px);
+      }
+
+      /* Input area */
+      .chatbot-input {
+        padding: 12px 16px;
+        display: flex;
+        gap: 10px;
+        background: rgba(30, 41, 59, 0.8);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .chatbot-input input {
+        flex: 1;
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 10px 16px;
+        color: #f8fafc;
+        font-size: 0.95rem;
+        outline: none;
+        transition: border-color 0.3s;
+      }
+
+      .chatbot-input input:focus {
+        border-color: rgba(59, 130, 246, 0.6);
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+      }
+
+      .chatbot-input input::placeholder {
+        color: #94a3b8;
+      }
+
+      .chatbot-input button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        border: none;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+        color: white;
+      }
+
+      .chatbot-input button svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .chatbot-input button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+      }
+
+      /* Features section */
+      .chatbot-features {
+        color: #f8fafc;
+        max-width: 520px;
+      }
+
+      .chatbot-features h2 {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+        font-weight: 700;
+        background: linear-gradient(to right, #3b82f6, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
+      }
+
+      .chatbot-features p {
+        font-size: 1.2rem;
+        color: #cbd5e1;
+        margin-bottom: 40px;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+      }
+
+      .feature {
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 24px;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .feature:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        border-color: rgba(59, 130, 246, 0.3);
+      }
+
+      .feature-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(
+          135deg,
+          rgba(59, 130, 246, 0.2),
+          rgba(139, 92, 246, 0.2)
+        );
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        color: #38bdf8;
+      }
+
+      .feature-icon svg {
+        width: 28px;
+        height: 28px;
+      }
+
+      .feature h3 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0 0 8px 0;
+        color: #f8fafc;
+      }
+
+      .feature p {
+        font-size: 0.95rem;
+        color: #94a3b8;
+        margin: 0;
+      }
+
+      /* Typing animation */
+      .typing-animation {
+        display: flex;
+        padding: 0 8px;
+      }
+
+      .typing-dot {
+        width: 8px;
+        height: 8px;
+        margin: 0 3px;
+        background: #94a3b8;
+        border-radius: 50%;
+        opacity: 0.7;
+        animation: typing 1.4s infinite ease-in-out both;
+      }
+
+      .typing-dot:nth-child(1) {
+        animation-delay: 0s;
+      }
+
+      .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes typing {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 1024px) {
+        .chatbot-container {
+          grid-template-columns: 1fr;
+          gap: 60px;
+        }
+
+        .chatbot-card {
+          margin: 0 auto;
+        }
+
+        .chatbot-features {
+          text-align: center;
+          margin: 0 auto;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .page4 {
+          padding: 40px 16px;
+        }
+
+        .chatbot-card {
+          height: 500px;
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .chatbot-features h2 {
+          font-size: 2rem;
+        }
+
+        .chatbot-features p {
+          font-size: 1rem;
+        }
+      }
+    </style>
+
+    <script>
+      // Chatbot local JavaScript - No external APIs required
+      document.addEventListener("DOMContentLoaded", function () {
+        // Elements
+        const chatbotCard = document.querySelector(".chatbot-card");
+        const chatbotToggle = document.querySelector(".chatbot-toggle-btn");
+        const chatbotMessages = document.getElementById("chatbot-messages");
+        const userInput = document.getElementById("user-input");
+        const sendButton = document.getElementById("send-button");
+        const suggestionChips = document.querySelectorAll(".suggestion-chip");
+
+        // Knowledge base for the travel chatbot
+        const knowledgeBase = {
+          greetings: [
+            "Hello! How can I help with your travel plans today?",
+            "Hi there! Looking to plan a trip?",
+            "Welcome! Where are you thinking of traveling to?",
+            "Greetings! I can help you plan your next adventure!",
+          ],
+
+          fallback: [
+            "I'm not quite sure about that. Could you ask something about destinations, travel tips, or planning?",
+            "I don't have that information yet. Can I help with popular destinations or travel advice instead?",
+            "I'm still learning about that. Meanwhile, I can help with travel budgeting or destination recommendations!",
+            "That's a great question! While I don't have the specific answer, I can help with other travel-related questions.",
+          ],
+
+          destinations: {
+            popular: [
+              "Some popular destinations right now include Bali, Japan, Portugal, Mexico, and Greece.",
+              "Travelers are loving Thailand, Italy, Costa Rica, New Zealand, and Spain this year!",
+              "Currently trending destinations include Croatia, Morocco, Iceland, Vietnam, and Peru.",
+            ],
+            beaches: [
+              "For amazing beaches, consider Maldives, Seychelles, Thailand's islands, Hawaii, or the Caribbean.",
+              "Beach lovers often enjoy Bora Bora, Fiji, Mexico's Riviera Maya, and the Greek Islands.",
+              "For pristine beaches, check out Whitehaven Beach in Australia, Anse Source d'Argent in Seychelles, or Trunk Bay in US Virgin Islands.",
+            ],
+            mountains: [
+              "For mountain experiences, consider Switzerland, Nepal, New Zealand, Colorado, or Patagonia.",
+              "Mountain lovers should check out the Canadian Rockies, Norway's fjords, Japan's Alps, or Austria.",
+              "Great mountain destinations include Peru's Sacred Valley, Italy's Dolomites, and Iceland's highlands.",
+            ],
+            cities: [
+              "Popular city destinations include Tokyo, Paris, Barcelona, New York, and Singapore.",
+              "Culture-rich cities to visit are Rome, Kyoto, Istanbul, Mexico City, and Prague.",
+              "Cities with amazing architecture include Dubai, Chicago, St. Petersburg, Shanghai, and Barcelona.",
+            ],
+          },
+
+          budgeting: {
+            tips: [
+              "To save money on travel: book flights early, travel during shoulder season, use public transportation, and eat where locals eat.",
+              "Budget travel tips: use flight fare alerts, stay in hostels or rentals, cook some of your own meals, and get city tourist passes.",
+              "Save on travel by being flexible with dates, using travel rewards points, packing light to avoid baggage fees, and researching free activities.",
+            ],
+            cheap: [
+              "Affordable destinations include Thailand, Vietnam, Mexico, Portugal, and Turkey.",
+              "Budget-friendly countries for travelers are Indonesia, Bolivia, India, Romania, and Egypt.",
+              "You can travel cheaply in Cambodia, Guatemala, Hungary, Morocco, and the Philippines.",
+            ],
+            luxury: [
+              "For luxury travel, consider the Maldives, Dubai, Santorini, French Polynesia, or Switzerland.",
+              "Luxurious experiences can be found in Bali's upscale resorts, Amalfi Coast villas, and safari lodges in Africa.",
+              "High-end travel destinations include St. Barts, Monaco, Aspen, Singapore, and the Seychelles.",
+            ],
+          },
+
+          timing: {
+            general: [
+              "Generally, shoulder seasons (spring and fall) offer good weather and fewer crowds in most destinations.",
+              "Book flights 2-3 months in advance for domestic and 4-6 months for international for the best rates.",
+              "Many destinations are cheapest to visit during their off-season, but check the weather conditions first.",
+            ],
+            specific: {
+              europe:
+                "For Europe, May, June, September and early October offer great weather with fewer crowds than summer.",
+              asia: "Many parts of Southeast Asia are best visited during dry season (November-April), avoiding monsoon season.",
+              caribbean:
+                "Caribbean travel is ideal December-April, but for better deals consider May-June before hurricane season.",
+              australia:
+                "Australia is great to visit during their spring and fall (Mar-May and Sep-Nov).",
+            },
+          },
+
+          tips: {
+            packing: [
+              "Essential packing tips: pack layers, bring a reusable water bottle, download offline maps, and photocopy important documents.",
+              "Don't forget to pack a universal adapter, portable charger, first-aid kit, and comfortable walking shoes.",
+              "Pack light by choosing a color scheme for your clothes, rolling instead of folding, and using packing cubes.",
+            ],
+            safety: [
+              "For safety, research your destination, get travel insurance, register with your embassy, and keep digital copies of documents.",
+              "Stay safe by keeping valuables secure, being aware of common scams, sharing your itinerary with family, and learning basic local phrases.",
+              "Travel safely by keeping emergency contacts handy, understanding local laws, using reputable transportation, and trusting your instincts.",
+            ],
+            local: [
+              "Enhance your experience by learning a few phrases in the local language, respecting customs, and trying local cuisine.",
+              "Connect with locals through cooking classes, walking tours, community events, or staying at family-run accommodations.",
+              "Respect local culture by researching appropriate dress, taking photos respectfully, and understanding tipping customs.",
+            ],
+          },
+
+          packages: [
+            "Our most popular package right now is the 10-day Thailand Adventure for $1,299 including accommodations and selected activities.",
+            "Families love our Costa Rica package which includes ziplines, wildlife tours, and beach time for $2,499 for a family of four.",
+            "Our European Highlights package covers Paris, Rome, and Barcelona over 12 days from $2,899 including hotels and rail passes.",
+            "For luxury travelers, our Bali Retreat package includes villa accommodations, spa treatments, and personalized excursions from $3,499.",
+          ],
+        };
+
+        // Initialize chatbot
+        let isBotTyping = false;
+        let minimized = false;
+
+        // Toggle chatbot minimized state
+        chatbotToggle.addEventListener("click", function () {
+          minimized = !minimized;
+          chatbotCard.classList.toggle("minimized", minimized);
+        });
+
+        // Send message when clicking the send button
+        sendButton.addEventListener("click", sendMessage);
+
+        // Send message when pressing Enter in the input field
+        userInput.addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            sendMessage();
+          }
+        });
+
+        // Handle suggestion chips
+        suggestionChips.forEach((chip) => {
+          chip.addEventListener("click", function () {
+            const suggestion = this.dataset.suggestion;
+
+            // Add user message with the suggestion
+            addMessage(suggestion, "user");
+
+            // Process the suggestion as if the user typed it
+            processUserInput(suggestion);
+          });
+        });
+
+        // Send message function
+        function sendMessage() {
+          const message = userInput.value.trim();
+          if (message !== "") {
+            // Add user message to the chat
+            addMessage(message, "user");
+
+            // Clear input field
+            userInput.value = "";
+
+            // Process the user input
+            processUserInput(message);
+          }
+        }
+
+        // Add a message to the chat (type can be 'user' or 'bot')
+        function addMessage(message, type) {
+          const messageElement = document.createElement("div");
+          messageElement.classList.add("message", `${type}-message`);
+
+          const now = new Date();
+          const timeString =
+            now.getHours().toString().padStart(2, "0") +
+            ":" +
+            now.getMinutes().toString().padStart(2, "0");
+
+          messageElement.innerHTML = `
+            <div class="message-content">
+              <p>${message}</p>
+            </div>
+            <div class="message-time">${timeString}</div>
+          `;
+
+          chatbotMessages.appendChild(messageElement);
+
+          // Scroll to the bottom of the chat
+          chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        // Add a typing indicator
+        function showTypingIndicator() {
+          if (isBotTyping) return;
+
+          isBotTyping = true;
+
+          const typingElement = document.createElement("div");
+          typingElement.classList.add(
+            "message",
+            "bot-message",
+            "typing-indicator"
+          );
+          typingElement.innerHTML = `
+            <div class="message-content">
+              <div class="typing-animation">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+              </div>
+            </div>
+          `;
+
+          chatbotMessages.appendChild(typingElement);
+          chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+
+          return typingElement;
+        }
+
+        // Remove the typing indicator
+        function removeTypingIndicator(typingElement) {
+          if (typingElement && typingElement.parentNode) {
+            typingElement.parentNode.removeChild(typingElement);
+          }
+          isBotTyping = false;
+        }
+
+        // Process user input and generate a response
+        function processUserInput(input) {
+          // Show typing indicator
+          const typingIndicator = showTypingIndicator();
+
+          // Convert input to lowercase for easier matching
+          const lowerInput = input.toLowerCase();
+
+          // Simulate thinking time (300-1200ms)
+          const thinkingTime = 300 + Math.random() * 900;
+
+          setTimeout(() => {
+            let response = "";
+
+            // Try to match input with known topics
+            if (
+              containsAny(lowerInput, [
+                "hi",
+                "hello",
+                "hey",
+                "greetings",
+                "howdy",
+              ])
+            ) {
+              response = getRandomResponse(knowledgeBase.greetings);
+            } else if (
+              containsAny(lowerInput, [
+                "popular",
+                "trending",
+                "best place",
+                "recommend",
+                "where to go",
+              ])
+            ) {
+              response = getRandomResponse(knowledgeBase.destinations.popular);
+            } else if (
+              containsAny(lowerInput, [
+                "beach",
+                "beaches",
+                "ocean",
+                "sand",
+                "swimming",
+              ])
+            ) {
+              response = getRandomResponse(knowledgeBase.destinations.beaches);
+            } else if (
+              containsAny(lowerInput, [
+                "mountain",
+                "mountains",
+                "hiking",
+                "alps",
+                "trek",
+              ])
+            ) {
+              response = getRandomResponse(
+                knowledgeBase.destinations.mountains
+              );
+            } else if (
+              containsAny(lowerInput, ["city", "cities", "urban", "metropolis"])
+            ) {
+              response = getRandomResponse(knowledgeBase.destinations.cities);
+            } else if (
+              containsAny(lowerInput, [
+                "budget",
+                "cheap",
+                "affordable",
+                "save money",
+                "cost",
+                "expensive",
+              ])
+            ) {
+              if (
+                containsAny(lowerInput, ["tips", "advice", "how to", "ways"])
+              ) {
+                response = getRandomResponse(knowledgeBase.budgeting.tips);
+              } else if (
+                containsAny(lowerInput, ["cheap", "affordable", "inexpensive"])
+              ) {
+                response = getRandomResponse(knowledgeBase.budgeting.cheap);
+              } else if (
+                containsAny(lowerInput, [
+                  "luxury",
+                  "expensive",
+                  "high-end",
+                  "fancy",
+                ])
+              ) {
+                response = getRandomResponse(knowledgeBase.budgeting.luxury);
+              } else {
+                response = getRandomResponse(knowledgeBase.budgeting.tips);
+              }
+            } else if (
+              containsAny(lowerInput, [
+                "when",
+                "best time",
+                "season",
+                "month",
+                "weather",
+              ])
+            ) {
+              if (containsAny(lowerInput, ["europe"])) {
+                response = knowledgeBase.timing.specific.europe;
+              } else if (
+                containsAny(lowerInput, [
+                  "asia",
+                  "thailand",
+                  "vietnam",
+                  "japan",
+                ])
+              ) {
+                response = knowledgeBase.timing.specific.asia;
+              } else if (
+                containsAny(lowerInput, ["caribbean", "bahamas", "jamaica"])
+              ) {
+                response = knowledgeBase.timing.specific.caribbean;
+              } else if (
+                containsAny(lowerInput, ["australia", "new zealand"])
+              ) {
+                response = knowledgeBase.timing.specific.australia;
+              } else {
+                response = getRandomResponse(knowledgeBase.timing.general);
+              }
+            } else if (
+              containsAny(lowerInput, [
+                "pack",
+                "packing",
+                "bring",
+                "luggage",
+                "suitcase",
+              ])
+            ) {
+              response = getRandomResponse(knowledgeBase.tips.packing);
+            } else if (
+              containsAny(lowerInput, ["safe", "safety", "security", "danger"])
+            ) {
+              response = getRandomResponse(knowledgeBase.tips.safety);
+            } else if (
+              containsAny(lowerInput, [
+                "local",
+                "culture",
+                "customs",
+                "tradition",
+              ])
+            ) {
+              response = getRandomResponse(knowledgeBase.tips.local);
+            } else if (
+              containsAny(lowerInput, [
+                "package",
+                "packages",
+                "deal",
+                "deals",
+                "offer",
+                "bundle",
+              ])
+            ) {
+              response = getRandomResponse(knowledgeBase.packages);
+            } else {
+              // If no match is found, use a fallback response
+              response = getRandomResponse(knowledgeBase.fallback);
+            }
+
+            // Remove typing indicator
+            removeTypingIndicator(typingIndicator);
+
+            // Add bot response
+            addMessage(response, "bot");
+
+            // Add follow-up suggestions based on the conversation
+            updateSuggestions(lowerInput);
+          }, thinkingTime);
+        }
+
+        // Helper function to check if input contains any of the given keywords
+        function containsAny(input, keywords) {
+          return keywords.some((keyword) => input.includes(keyword));
+        }
+
+        // Get a random response from an array of possible responses
+        function getRandomResponse(responses) {
+          const index = Math.floor(Math.random() * responses.length);
+          return responses[index];
+        }
+
+        // Update suggestion chips based on the conversation context
+        function updateSuggestions(lastInput) {
+          // Only update suggestions if we have elements to update
+          if (!suggestionChips || suggestionChips.length === 0) return;
+
+          const newSuggestions = [];
+
+          if (
+            containsAny(lastInput, ["beach", "mountain", "city", "destination"])
+          ) {
+            newSuggestions.push(
+              "Best time to visit",
+              "Budget tips",
+              "Travel packages",
+              "Safety tips"
+            );
+          } else if (
+            containsAny(lastInput, [
+              "budget",
+              "money",
+              "cost",
+              "cheap",
+              "expensive",
+            ])
+          ) {
+            newSuggestions.push(
+              "Affordable destinations",
+              "Luxury options",
+              "Save on flights",
+              "Travel off-season"
+            );
+          } else if (
+            containsAny(lastInput, ["when", "time", "season", "month"])
+          ) {
+            newSuggestions.push(
+              "Europe seasons",
+              "Asia weather",
+              "Caribbean hurricanes",
+              "Australia climate"
+            );
+          } else if (containsAny(lastInput, ["package", "deal", "offer"])) {
+            newSuggestions.push(
+              "Family packages",
+              "Beach resorts",
+              "Adventure tours",
+              "City breaks"
+            );
+          } else {
+            newSuggestions.push(
+              "Popular destinations",
+              "Budget travel tips",
+              "Best time to visit",
+              "Travel packages"
+            );
+          }
+
+          // Update the suggestion chips (up to the number of chips we have)
+          for (
+            let i = 0;
+            i < Math.min(suggestionChips.length, newSuggestions.length);
+            i++
+          ) {
+            suggestionChips[i].textContent = newSuggestions[i];
+            suggestionChips[i].dataset.suggestion = newSuggestions[i];
+          }
+        }
+
+        // Immediately start a conversation with a welcome message after a short delay
+        setTimeout(() => {
+          addMessage(getRandomResponse(knowledgeBase.greetings), "bot");
+        }, 500);
+      });
+    </script>
+
+    <!-- Page 5 - Newsletter & Connect -->
+    <div class="page5">
+      <div class="newsletter-container">
+        <div class="newsletter-content">
+          <div class="newsletter-text">
+            <h2>Stay Updated on Travel Trends</h2>
+            <p>
+              Subscribe to our newsletter and receive exclusive travel deals,
+              insider tips, and destination inspiration directly to your inbox.
+            </p>
+
+            <div class="newsletter-features">
+              <div class="feature-item">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+                  />
+                </svg>
+                <span>Weekly travel inspiration</span>
+              </div>
+              <div class="feature-item">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+                  />
+                </svg>
+                <span>Exclusive subscriber discounts</span>
+              </div>
+              <div class="feature-item">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+                  />
+                </svg>
+                <span>Early access to new packages</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="newsletter-form">
+            <h3>Join Our Community</h3>
+            <form id="subscribe-form">
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" placeholder="Your name" required />
+              </div>
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="your.email@example.com"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="checkbox-container">
+                  <input type="checkbox" id="preferences" />
+                  <span class="checkmark"></span>
+                  I'm interested in receiving personalized travel
+                  recommendations
+                </label>
+              </div>
+              <button type="submit" class="subscribe-btn">
+                <span>Subscribe Now</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"
+                  />
+                </svg>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="social-connect">
+          <h3>Connect With Us</h3>
+          <div class="social-icons">
+            <a href="#" class="social-icon instagram" aria-label="Instagram">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
+                />
+              </svg>
+            </a>
+            <a href="#" class="social-icon facebook" aria-label="Facebook">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"
+                />
+              </svg>
+            </a>
+            <a href="#" class="social-icon twitter" aria-label="Twitter">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"
+                />
+              </svg>
+            </a>
+            <a href="#" class="social-icon youtube" aria-label="YouTube">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"
+                />
+              </svg>
+            </a>
+            <a href="#" class="social-icon pinterest" aria-label="Pinterest">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 0c-6.627 0-12 5.372-12 12 0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146 1.124.347 2.317.535 3.554.535 6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="success-message" id="success-message">
+        <div class="success-content">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+            />
+          </svg>
+          <h3>Thank You for Subscribing!</h3>
+          <p>
+            Welcome to our travel community. Check your email for a special
+            welcome offer.
+          </p>
+          <button class="close-message">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      /* Page 5 Styles - Dark Theme */
+      .page5 {
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #0f172a, #111827);
+        padding: 80px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .page5::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: radial-gradient(
+            circle at 90% 10%,
+            rgba(56, 189, 248, 0.05) 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 10% 80%,
+            rgba(139, 92, 246, 0.05) 0%,
+            transparent 40%
+          );
+        pointer-events: none;
+      }
+
+      .newsletter-container {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .newsletter-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: center;
+        margin-bottom: 60px;
+      }
+
+      .newsletter-text h2 {
+        font-size: 2.5rem;
+        color: #f8fafc;
+        margin-bottom: 20px;
+        font-weight: 700;
+        line-height: 1.2;
+        background: linear-gradient(to right, #3b82f6, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
+      }
+
+      .newsletter-text p {
+        font-size: 1.1rem;
+        color: #cbd5e1;
+        line-height: 1.6;
+        margin-bottom: 30px;
+      }
+
+      .newsletter-features {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .feature-item svg {
+        width: 20px;
+        height: 20px;
+        color: #38bdf8;
+      }
+
+      .feature-item span {
+        color: #e2e8f0;
+        font-size: 1rem;
+      }
+
+      /* Form styles */
+      .newsletter-form {
+        background: rgba(15, 23, 42, 0.7);
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+      }
+
+      .newsletter-form h3 {
+        font-size: 1.5rem;
+        color: #f8fafc;
+        margin-bottom: 24px;
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #cbd5e1;
+        font-size: 0.9rem;
+      }
+
+      .form-group input[type="text"],
+      .form-group input[type="email"] {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(15, 23, 42, 0.6);
+        color: #f8fafc;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+      }
+
+      .form-group input::placeholder {
+        color: #64748b;
+      }
+
+      /* Checkbox style */
+      .checkbox-container {
+        display: flex;
+        align-items: flex-start;
+        position: relative;
+        padding-left: 30px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: #cbd5e1;
+        line-height: 1.4;
+        user-select: none;
+      }
+
+      .checkbox-container input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+      }
+
+      .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        background-color: rgba(15, 23, 42, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        transition: all 0.2s ease;
+      }
+
+      .checkbox-container:hover input ~ .checkmark {
+        border-color: rgba(59, 130, 246, 0.5);
+      }
+
+      .checkbox-container input:checked ~ .checkmark {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+      }
+
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+      }
+
+      .checkbox-container input:checked ~ .checkmark:after {
+        display: block;
+      }
+
+      .checkbox-container .checkmark:after {
+        left: 7px;
+        top: 3px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+
+      /* Button style */
+      .subscribe-btn {
+        width: 100%;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .subscribe-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+      }
+
+      .subscribe-btn:active {
+        transform: translateY(0);
+      }
+
+      .subscribe-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.5s;
+      }
+
+      .subscribe-btn:hover::before {
+        left: 100%;
+      }
+
+      .subscribe-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      /* Social connect */
+      .social-connect {
+        text-align: center;
+      }
+
+      .social-connect h3 {
+        font-size: 1.4rem;
+        color: #f8fafc;
+        margin-bottom: 20px;
+      }
+
+      .social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .social-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f8fafc;
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .social-icon svg {
+        width: 22px;
+        height: 22px;
+        transition: all 0.3s ease;
+      }
+
+      .social-icon:hover {
+        transform: translateY(-5px);
+      }
+
+      .social-icon.instagram:hover {
+        background: #e1306c;
+        box-shadow: 0 5px 15px rgba(225, 48, 108, 0.4);
+      }
+
+      .social-icon.facebook:hover {
+        background: #4267b2;
+        box-shadow: 0 5px 15px rgba(66, 103, 178, 0.4);
+      }
+
+      .social-icon.twitter:hover {
+        background: #1da1f2;
+        box-shadow: 0 5px 15px rgba(29, 161, 242, 0.4);
+      }
+
+      .social-icon.youtube:hover {
+        background: #ff0000;
+        box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+      }
+
+      .social-icon.pinterest:hover {
+        background: #e60023;
+        box-shadow: 0 5px 15px rgba(230, 0, 35, 0.4);
+      }
+
+      /* Success message */
+      .success-message {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .success-message.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .success-content {
+        background: #1e293b;
+        border-radius: 16px;
+        padding: 40px;
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+      }
+
+      .success-message.show .success-content {
+        transform: translateY(0);
+      }
+
+      .success-content svg {
+        width: 60px;
+        height: 60px;
+        color: #10b981;
+        margin-bottom: 20px;
+      }
+
+      .success-content h3 {
+        font-size: 1.5rem;
+        color: #f8fafc;
+        margin-bottom: 12px;
+      }
+
+      .success-content p {
+        color: #cbd5e1;
+        margin-bottom: 24px;
+        line-height: 1.5;
+      }
+
+      .close-message {
+        padding: 10px 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 8px;
+        color: #f8fafc;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .close-message:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* Responsive styles */
+      @media (max-width: 900px) {
+        .newsletter-content {
+          grid-template-columns: 1fr;
+          gap: 30px;
+        }
+
+        .newsletter-text h2 {
+          font-size: 2rem;
+        }
+
+        .page5 {
+          padding: 60px 20px;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .newsletter-text h2 {
+          font-size: 1.8rem;
+        }
+
+        .social-icons {
+          flex-wrap: wrap;
+        }
+
+        .success-content {
+          padding: 30px 20px;
+        }
+      }
+    </style>
+
+    <script>
+      // Simple form handling script
+      document.addEventListener("DOMContentLoaded", function () {
+        const subscribeForm = document.getElementById("subscribe-form");
+        const successMessage = document.getElementById("success-message");
+        const closeMessageBtn = document.querySelector(".close-message");
+
+        if (subscribeForm) {
+          subscribeForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            // Get form values
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const preferences = document.getElementById("preferences").checked;
+
+            // Simple validation
+            if (!name || !email) {
+              return;
+            }
+
+            // Simulate form submission
+            // In a real application, you would send this data to your server
+            console.log("Subscription data:", { name, email, preferences });
+
+            // Clear the form
+            subscribeForm.reset();
+
+            // Show success message
+            successMessage.classList.add("show");
+          });
+        }
+
+        if (closeMessageBtn) {
+          closeMessageBtn.addEventListener("click", function () {
+            successMessage.classList.remove("show");
+          });
+        }
+
+        // Add simple animation if GSAP is available
+        if (window.gsap && window.ScrollTrigger) {
+          gsap.registerPlugin(ScrollTrigger);
+
+          gsap.from(".newsletter-text", {
+            opacity: 0,
+            x: -50,
+            duration: 1,
+            scrollTrigger: {
+              trigger: ".page5",
+              start: "top 80%",
+              toggleActions: "play none none none",
+            },
+          });
+
+          gsap.from(".newsletter-form", {
+            opacity: 0,
+            x: 50,
+            duration: 1,
+            scrollTrigger: {
+              trigger: ".page5",
+              start: "top 80%",
+              toggleActions: "play none none none",
+            },
+          });
+
+          gsap.from(".social-connect", {
+            opacity: 0,
+            y: 50,
+            duration: 1,
+            delay: 0.3,
+            scrollTrigger: {
+              trigger: ".newsletter-content",
+              start: "bottom 80%",
+              toggleActions: "play none none none",
+            },
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
